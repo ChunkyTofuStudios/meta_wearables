@@ -1,0 +1,27 @@
+name: meta_wearables_example
+description: "Demonstrates how to use the meta_wearables plugin."
+version: 1.0.0+1
+publish_to: "none"
+
+environment:
+  sdk: ^3.9.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  meta_wearables:
+    path: ../
+
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  integration_test:
+    sdk: flutter
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
