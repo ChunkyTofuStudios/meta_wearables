@@ -15,7 +15,11 @@ PlatformException _createConnectionError(String channelName) {
   );
 }
 
-List<Object?> wrapResponse({Object? result, PlatformException? error, bool empty = false}) {
+List<Object?> wrapResponse({
+  Object? result,
+  PlatformException? error,
+  bool empty = false,
+}) {
   if (empty) {
     return <Object?>[];
   }
@@ -24,74 +28,74 @@ List<Object?> wrapResponse({Object? result, PlatformException? error, bool empty
   }
   return <Object?>[error.code, error.message, error.details];
 }
+
 bool _deepEquals(Object? a, Object? b) {
   if (a is List && b is List) {
     return a.length == b.length &&
-        a.indexed
-        .every(((int, dynamic) item) => _deepEquals(item.$2, b[item.$1]));
+        a.indexed.every(
+          ((int, dynamic) item) => _deepEquals(item.$2, b[item.$1]),
+        );
   }
   if (a is Map && b is Map) {
-    return a.length == b.length && a.entries.every((MapEntry<Object?, Object?> entry) =>
-        (b as Map<Object?, Object?>).containsKey(entry.key) &&
-        _deepEquals(entry.value, b[entry.key]));
+    return a.length == b.length &&
+        a.entries.every(
+          (MapEntry<Object?, Object?> entry) =>
+              (b as Map<Object?, Object?>).containsKey(entry.key) &&
+              _deepEquals(entry.value, b[entry.key]),
+        );
   }
   return a == b;
 }
 
-
-enum Permission {
-  camera,
-}
+/// Permissions that can be requested.
+enum Permission { camera }
 
 enum PermissionStatus {
   granted,
   denied,
+
+  /// Android-only: wraps PermissionStatus.Error
   error,
 }
 
+/// Registration states per official docs (Android/iOS).
 enum RegistrationState {
-  registered,
-  registering,
-  unregistered,
-  unregistering,
   unavailable,
-  error,
+  available,
+  registering,
+  registered,
+  unregistering,
 }
 
-enum VideoQuality {
-  low,
-  medium,
-  high,
-}
+enum VideoQuality { low, medium, high }
 
+/// Combined stream states across Android (STARTING/STARTED/STREAMING/STOPPING/STOPPED/CLOSED)
+/// and iOS (waitingForDevice/starting/streaming/paused/stopping/stopped).
 enum StreamState {
-  stopped,
   waitingForDevice,
   starting,
+  started,
   streaming,
   stopping,
+  stopped,
   paused,
+  closed,
 }
 
 class PermissionResult {
-  PermissionResult({
-    required this.status,
-    this.message,
-  });
+  PermissionResult({required this.status, this.message});
 
   PermissionStatus status;
 
   String? message;
 
   List<Object?> _toList() {
-    return <Object?>[
-      status,
-      message,
-    ];
+    return <Object?>[status, message];
   }
 
   Object encode() {
-    return _toList();  }
+    return _toList();
+  }
 
   static PermissionResult decode(Object result) {
     result as List<Object?>;
@@ -115,35 +119,32 @@ class PermissionResult {
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
-  int get hashCode => Object.hashAll(_toList())
-;
+  int get hashCode => Object.hashAll(_toList());
 }
 
 class RegistrationUpdate {
-  RegistrationUpdate({
-    required this.state,
-    this.description,
-  });
+  RegistrationUpdate({required this.state, this.errorCode, this.description});
 
   RegistrationState state;
+
+  String? errorCode;
 
   String? description;
 
   List<Object?> _toList() {
-    return <Object?>[
-      state,
-      description,
-    ];
+    return <Object?>[state, errorCode, description];
   }
 
   Object encode() {
-    return _toList();  }
+    return _toList();
+  }
 
   static RegistrationUpdate decode(Object result) {
     result as List<Object?>;
     return RegistrationUpdate(
       state: result[0]! as RegistrationState,
-      description: result[1] as String?,
+      errorCode: result[1] as String?,
+      description: result[2] as String?,
     );
   }
 
@@ -161,29 +162,23 @@ class RegistrationUpdate {
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
-  int get hashCode => Object.hashAll(_toList())
-;
+  int get hashCode => Object.hashAll(_toList());
 }
 
 class StreamConfig {
-  StreamConfig({
-    required this.quality,
-    required this.frameRate,
-  });
+  StreamConfig({required this.quality, required this.frameRate});
 
   VideoQuality quality;
 
   int frameRate;
 
   List<Object?> _toList() {
-    return <Object?>[
-      quality,
-      frameRate,
-    ];
+    return <Object?>[quality, frameRate];
   }
 
   Object encode() {
-    return _toList();  }
+    return _toList();
+  }
 
   static StreamConfig decode(Object result) {
     result as List<Object?>;
@@ -207,8 +202,7 @@ class StreamConfig {
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
-  int get hashCode => Object.hashAll(_toList())
-;
+  int get hashCode => Object.hashAll(_toList());
 }
 
 class VideoFrameData {
@@ -225,15 +219,12 @@ class VideoFrameData {
   int height;
 
   List<Object?> _toList() {
-    return <Object?>[
-      data,
-      width,
-      height,
-    ];
+    return <Object?>[data, width, height];
   }
 
   Object encode() {
-    return _toList();  }
+    return _toList();
+  }
 
   static VideoFrameData decode(Object result) {
     result as List<Object?>;
@@ -258,29 +249,23 @@ class VideoFrameData {
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
-  int get hashCode => Object.hashAll(_toList())
-;
+  int get hashCode => Object.hashAll(_toList());
 }
 
 class PhotoData {
-  PhotoData({
-    required this.data,
-    required this.format,
-  });
+  PhotoData({required this.data, required this.format});
 
   Uint8List data;
 
   String format;
 
   List<Object?> _toList() {
-    return <Object?>[
-      data,
-      format,
-    ];
+    return <Object?>[data, format];
   }
 
   Object encode() {
-    return _toList();  }
+    return _toList();
+  }
 
   static PhotoData decode(Object result) {
     result as List<Object?>;
@@ -304,36 +289,27 @@ class PhotoData {
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
-  int get hashCode => Object.hashAll(_toList())
-;
+  int get hashCode => Object.hashAll(_toList());
 }
 
 class ErrorInfo {
-  ErrorInfo({
-    required this.code,
-    required this.message,
-  });
+  ErrorInfo({required this.code, required this.message});
 
   String code;
 
   String message;
 
   List<Object?> _toList() {
-    return <Object?>[
-      code,
-      message,
-    ];
+    return <Object?>[code, message];
   }
 
   Object encode() {
-    return _toList();  }
+    return _toList();
+  }
 
   static ErrorInfo decode(Object result) {
     result as List<Object?>;
-    return ErrorInfo(
-      code: result[0]! as String,
-      message: result[1]! as String,
-    );
+    return ErrorInfo(code: result[0]! as String, message: result[1]! as String);
   }
 
   @override
@@ -350,10 +326,8 @@ class ErrorInfo {
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
-  int get hashCode => Object.hashAll(_toList())
-;
+  int get hashCode => Object.hashAll(_toList());
 }
-
 
 class _PigeonCodec extends StandardMessageCodec {
   const _PigeonCodec();
@@ -362,37 +336,37 @@ class _PigeonCodec extends StandardMessageCodec {
     if (value is int) {
       buffer.putUint8(4);
       buffer.putInt64(value);
-    }    else if (value is Permission) {
+    } else if (value is Permission) {
       buffer.putUint8(129);
       writeValue(buffer, value.index);
-    }    else if (value is PermissionStatus) {
+    } else if (value is PermissionStatus) {
       buffer.putUint8(130);
       writeValue(buffer, value.index);
-    }    else if (value is RegistrationState) {
+    } else if (value is RegistrationState) {
       buffer.putUint8(131);
       writeValue(buffer, value.index);
-    }    else if (value is VideoQuality) {
+    } else if (value is VideoQuality) {
       buffer.putUint8(132);
       writeValue(buffer, value.index);
-    }    else if (value is StreamState) {
+    } else if (value is StreamState) {
       buffer.putUint8(133);
       writeValue(buffer, value.index);
-    }    else if (value is PermissionResult) {
+    } else if (value is PermissionResult) {
       buffer.putUint8(134);
       writeValue(buffer, value.encode());
-    }    else if (value is RegistrationUpdate) {
+    } else if (value is RegistrationUpdate) {
       buffer.putUint8(135);
       writeValue(buffer, value.encode());
-    }    else if (value is StreamConfig) {
+    } else if (value is StreamConfig) {
       buffer.putUint8(136);
       writeValue(buffer, value.encode());
-    }    else if (value is VideoFrameData) {
+    } else if (value is VideoFrameData) {
       buffer.putUint8(137);
       writeValue(buffer, value.encode());
-    }    else if (value is PhotoData) {
+    } else if (value is PhotoData) {
       buffer.putUint8(138);
       writeValue(buffer, value.encode());
-    }    else if (value is ErrorInfo) {
+    } else if (value is ErrorInfo) {
       buffer.putUint8(139);
       writeValue(buffer, value.encode());
     } else {
@@ -403,32 +377,32 @@ class _PigeonCodec extends StandardMessageCodec {
   @override
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
-      case 129: 
+      case 129:
         final value = readValue(buffer) as int?;
         return value == null ? null : Permission.values[value];
-      case 130: 
+      case 130:
         final value = readValue(buffer) as int?;
         return value == null ? null : PermissionStatus.values[value];
-      case 131: 
+      case 131:
         final value = readValue(buffer) as int?;
         return value == null ? null : RegistrationState.values[value];
-      case 132: 
+      case 132:
         final value = readValue(buffer) as int?;
         return value == null ? null : VideoQuality.values[value];
-      case 133: 
+      case 133:
         final value = readValue(buffer) as int?;
         return value == null ? null : StreamState.values[value];
-      case 134: 
+      case 134:
         return PermissionResult.decode(readValue(buffer)!);
-      case 135: 
+      case 135:
         return RegistrationUpdate.decode(readValue(buffer)!);
-      case 136: 
+      case 136:
         return StreamConfig.decode(readValue(buffer)!);
-      case 137: 
+      case 137:
         return VideoFrameData.decode(readValue(buffer)!);
-      case 138: 
+      case 138:
         return PhotoData.decode(readValue(buffer)!);
-      case 139: 
+      case 139:
         return ErrorInfo.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
@@ -440,9 +414,12 @@ class WearablesHostApi {
   /// Constructor for [WearablesHostApi].  The [binaryMessenger] named argument is
   /// available for dependency injection.  If it is left null, the default
   /// BinaryMessenger will be used which routes to the host platform.
-  WearablesHostApi({BinaryMessenger? binaryMessenger, String messageChannelSuffix = ''})
-      : pigeonVar_binaryMessenger = binaryMessenger,
-        pigeonVar_messageChannelSuffix = messageChannelSuffix.isNotEmpty ? '.$messageChannelSuffix' : '';
+  WearablesHostApi({
+    BinaryMessenger? binaryMessenger,
+    String messageChannelSuffix = '',
+  }) : pigeonVar_binaryMessenger = binaryMessenger,
+       pigeonVar_messageChannelSuffix =
+           messageChannelSuffix.isNotEmpty ? '.$messageChannelSuffix' : '';
   final BinaryMessenger? pigeonVar_binaryMessenger;
 
   static const MessageCodec<Object?> pigeonChannelCodec = _PigeonCodec();
@@ -450,7 +427,8 @@ class WearablesHostApi {
   final String pigeonVar_messageChannelSuffix;
 
   Future<void> initialize() async {
-    final pigeonVar_channelName = 'dev.flutter.pigeon.meta_wearables.WearablesHostApi.initialize$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channelName =
+        'dev.flutter.pigeon.meta_wearables.WearablesHostApi.initialize$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -472,13 +450,16 @@ class WearablesHostApi {
   }
 
   Future<PermissionResult> checkPermission(Permission permission) async {
-    final pigeonVar_channelName = 'dev.flutter.pigeon.meta_wearables.WearablesHostApi.checkPermission$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channelName =
+        'dev.flutter.pigeon.meta_wearables.WearablesHostApi.checkPermission$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(<Object?>[permission]);
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(
+      <Object?>[permission],
+    );
     final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
@@ -499,13 +480,16 @@ class WearablesHostApi {
   }
 
   Future<PermissionResult> requestPermission(Permission permission) async {
-    final pigeonVar_channelName = 'dev.flutter.pigeon.meta_wearables.WearablesHostApi.requestPermission$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channelName =
+        'dev.flutter.pigeon.meta_wearables.WearablesHostApi.requestPermission$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(<Object?>[permission]);
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(
+      <Object?>[permission],
+    );
     final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
@@ -526,7 +510,8 @@ class WearablesHostApi {
   }
 
   Future<RegistrationUpdate> getRegistrationState() async {
-    final pigeonVar_channelName = 'dev.flutter.pigeon.meta_wearables.WearablesHostApi.getRegistrationState$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channelName =
+        'dev.flutter.pigeon.meta_wearables.WearablesHostApi.getRegistrationState$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -553,7 +538,8 @@ class WearablesHostApi {
   }
 
   Future<void> startRegistration() async {
-    final pigeonVar_channelName = 'dev.flutter.pigeon.meta_wearables.WearablesHostApi.startRegistration$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channelName =
+        'dev.flutter.pigeon.meta_wearables.WearablesHostApi.startRegistration$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -575,7 +561,8 @@ class WearablesHostApi {
   }
 
   Future<void> startUnregistration() async {
-    final pigeonVar_channelName = 'dev.flutter.pigeon.meta_wearables.WearablesHostApi.startUnregistration$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channelName =
+        'dev.flutter.pigeon.meta_wearables.WearablesHostApi.startUnregistration$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -597,13 +584,16 @@ class WearablesHostApi {
   }
 
   Future<void> startStream(StreamConfig config) async {
-    final pigeonVar_channelName = 'dev.flutter.pigeon.meta_wearables.WearablesHostApi.startStream$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channelName =
+        'dev.flutter.pigeon.meta_wearables.WearablesHostApi.startStream$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(<Object?>[config]);
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(
+      <Object?>[config],
+    );
     final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
@@ -619,7 +609,8 @@ class WearablesHostApi {
   }
 
   Future<void> stopStream() async {
-    final pigeonVar_channelName = 'dev.flutter.pigeon.meta_wearables.WearablesHostApi.stopStream$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channelName =
+        'dev.flutter.pigeon.meta_wearables.WearablesHostApi.stopStream$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -641,7 +632,8 @@ class WearablesHostApi {
   }
 
   Future<void> capturePhoto() async {
-    final pigeonVar_channelName = 'dev.flutter.pigeon.meta_wearables.WearablesHostApi.capturePhoto$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channelName =
+        'dev.flutter.pigeon.meta_wearables.WearablesHostApi.capturePhoto$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -676,129 +668,175 @@ abstract class WearablesFlutterApi {
 
   void onError(ErrorInfo error);
 
-  static void setUp(WearablesFlutterApi? api, {BinaryMessenger? binaryMessenger, String messageChannelSuffix = '',}) {
-    messageChannelSuffix = messageChannelSuffix.isNotEmpty ? '.$messageChannelSuffix' : '';
+  static void setUp(
+    WearablesFlutterApi? api, {
+    BinaryMessenger? binaryMessenger,
+    String messageChannelSuffix = '',
+  }) {
+    messageChannelSuffix =
+        messageChannelSuffix.isNotEmpty ? '.$messageChannelSuffix' : '';
     {
       final pigeonVar_channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.meta_wearables.WearablesFlutterApi.onRegistrationStateChanged$messageChannelSuffix', pigeonChannelCodec,
-          binaryMessenger: binaryMessenger);
+        'dev.flutter.pigeon.meta_wearables.WearablesFlutterApi.onRegistrationStateChanged$messageChannelSuffix',
+        pigeonChannelCodec,
+        binaryMessenger: binaryMessenger,
+      );
       if (api == null) {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null,
-          'Argument for dev.flutter.pigeon.meta_wearables.WearablesFlutterApi.onRegistrationStateChanged was null.');
+          assert(
+            message != null,
+            'Argument for dev.flutter.pigeon.meta_wearables.WearablesFlutterApi.onRegistrationStateChanged was null.',
+          );
           final List<Object?> args = (message as List<Object?>?)!;
-          final RegistrationUpdate? arg_update = (args[0] as RegistrationUpdate?);
-          assert(arg_update != null,
-              'Argument for dev.flutter.pigeon.meta_wearables.WearablesFlutterApi.onRegistrationStateChanged was null, expected non-null RegistrationUpdate.');
+          final RegistrationUpdate? arg_update =
+              (args[0] as RegistrationUpdate?);
+          assert(
+            arg_update != null,
+            'Argument for dev.flutter.pigeon.meta_wearables.WearablesFlutterApi.onRegistrationStateChanged was null, expected non-null RegistrationUpdate.',
+          );
           try {
             api.onRegistrationStateChanged(arg_update!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          }          catch (e) {
-            return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
+          } catch (e) {
+            return wrapResponse(
+              error: PlatformException(code: 'error', message: e.toString()),
+            );
           }
         });
       }
     }
     {
       final pigeonVar_channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.meta_wearables.WearablesFlutterApi.onStreamStateChanged$messageChannelSuffix', pigeonChannelCodec,
-          binaryMessenger: binaryMessenger);
+        'dev.flutter.pigeon.meta_wearables.WearablesFlutterApi.onStreamStateChanged$messageChannelSuffix',
+        pigeonChannelCodec,
+        binaryMessenger: binaryMessenger,
+      );
       if (api == null) {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null,
-          'Argument for dev.flutter.pigeon.meta_wearables.WearablesFlutterApi.onStreamStateChanged was null.');
+          assert(
+            message != null,
+            'Argument for dev.flutter.pigeon.meta_wearables.WearablesFlutterApi.onStreamStateChanged was null.',
+          );
           final List<Object?> args = (message as List<Object?>?)!;
           final StreamState? arg_state = (args[0] as StreamState?);
-          assert(arg_state != null,
-              'Argument for dev.flutter.pigeon.meta_wearables.WearablesFlutterApi.onStreamStateChanged was null, expected non-null StreamState.');
+          assert(
+            arg_state != null,
+            'Argument for dev.flutter.pigeon.meta_wearables.WearablesFlutterApi.onStreamStateChanged was null, expected non-null StreamState.',
+          );
           try {
             api.onStreamStateChanged(arg_state!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          }          catch (e) {
-            return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
+          } catch (e) {
+            return wrapResponse(
+              error: PlatformException(code: 'error', message: e.toString()),
+            );
           }
         });
       }
     }
     {
       final pigeonVar_channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.meta_wearables.WearablesFlutterApi.onVideoFrame$messageChannelSuffix', pigeonChannelCodec,
-          binaryMessenger: binaryMessenger);
+        'dev.flutter.pigeon.meta_wearables.WearablesFlutterApi.onVideoFrame$messageChannelSuffix',
+        pigeonChannelCodec,
+        binaryMessenger: binaryMessenger,
+      );
       if (api == null) {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null,
-          'Argument for dev.flutter.pigeon.meta_wearables.WearablesFlutterApi.onVideoFrame was null.');
+          assert(
+            message != null,
+            'Argument for dev.flutter.pigeon.meta_wearables.WearablesFlutterApi.onVideoFrame was null.',
+          );
           final List<Object?> args = (message as List<Object?>?)!;
           final VideoFrameData? arg_frame = (args[0] as VideoFrameData?);
-          assert(arg_frame != null,
-              'Argument for dev.flutter.pigeon.meta_wearables.WearablesFlutterApi.onVideoFrame was null, expected non-null VideoFrameData.');
+          assert(
+            arg_frame != null,
+            'Argument for dev.flutter.pigeon.meta_wearables.WearablesFlutterApi.onVideoFrame was null, expected non-null VideoFrameData.',
+          );
           try {
             api.onVideoFrame(arg_frame!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          }          catch (e) {
-            return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
+          } catch (e) {
+            return wrapResponse(
+              error: PlatformException(code: 'error', message: e.toString()),
+            );
           }
         });
       }
     }
     {
       final pigeonVar_channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.meta_wearables.WearablesFlutterApi.onPhotoCaptured$messageChannelSuffix', pigeonChannelCodec,
-          binaryMessenger: binaryMessenger);
+        'dev.flutter.pigeon.meta_wearables.WearablesFlutterApi.onPhotoCaptured$messageChannelSuffix',
+        pigeonChannelCodec,
+        binaryMessenger: binaryMessenger,
+      );
       if (api == null) {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null,
-          'Argument for dev.flutter.pigeon.meta_wearables.WearablesFlutterApi.onPhotoCaptured was null.');
+          assert(
+            message != null,
+            'Argument for dev.flutter.pigeon.meta_wearables.WearablesFlutterApi.onPhotoCaptured was null.',
+          );
           final List<Object?> args = (message as List<Object?>?)!;
           final PhotoData? arg_photo = (args[0] as PhotoData?);
-          assert(arg_photo != null,
-              'Argument for dev.flutter.pigeon.meta_wearables.WearablesFlutterApi.onPhotoCaptured was null, expected non-null PhotoData.');
+          assert(
+            arg_photo != null,
+            'Argument for dev.flutter.pigeon.meta_wearables.WearablesFlutterApi.onPhotoCaptured was null, expected non-null PhotoData.',
+          );
           try {
             api.onPhotoCaptured(arg_photo!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          }          catch (e) {
-            return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
+          } catch (e) {
+            return wrapResponse(
+              error: PlatformException(code: 'error', message: e.toString()),
+            );
           }
         });
       }
     }
     {
       final pigeonVar_channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.meta_wearables.WearablesFlutterApi.onError$messageChannelSuffix', pigeonChannelCodec,
-          binaryMessenger: binaryMessenger);
+        'dev.flutter.pigeon.meta_wearables.WearablesFlutterApi.onError$messageChannelSuffix',
+        pigeonChannelCodec,
+        binaryMessenger: binaryMessenger,
+      );
       if (api == null) {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null,
-          'Argument for dev.flutter.pigeon.meta_wearables.WearablesFlutterApi.onError was null.');
+          assert(
+            message != null,
+            'Argument for dev.flutter.pigeon.meta_wearables.WearablesFlutterApi.onError was null.',
+          );
           final List<Object?> args = (message as List<Object?>?)!;
           final ErrorInfo? arg_error = (args[0] as ErrorInfo?);
-          assert(arg_error != null,
-              'Argument for dev.flutter.pigeon.meta_wearables.WearablesFlutterApi.onError was null, expected non-null ErrorInfo.');
+          assert(
+            arg_error != null,
+            'Argument for dev.flutter.pigeon.meta_wearables.WearablesFlutterApi.onError was null, expected non-null ErrorInfo.',
+          );
           try {
             api.onError(arg_error!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          }          catch (e) {
-            return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
+          } catch (e) {
+            return wrapResponse(
+              error: PlatformException(code: 'error', message: e.toString()),
+            );
           }
         });
       }

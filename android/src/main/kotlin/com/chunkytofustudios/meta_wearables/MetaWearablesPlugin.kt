@@ -1,4 +1,4 @@
-package com.chunkytofustudios.meta_wearables.meta_wearables
+package com.chunkytofustudios.meta_wearables
 
 import android.app.Activity
 import android.content.Context
@@ -271,40 +271,41 @@ private fun com.chunkytofustudios.meta_wearables.meta_wearables.Permission.toSdk
 
 private fun RegistrationState.toPigeonUpdate(): RegistrationUpdate =
     when (this) {
-        is RegistrationState.Registered -> RegistrationUpdate(
-            state = RegistrationStatePigeon.REGISTERED,
-            description = description
-        )
-        is RegistrationState.Registering -> RegistrationUpdate(
-            state = RegistrationStatePigeon.REGISTERING,
-            description = description
-        )
-        is RegistrationState.Unregistered -> RegistrationUpdate(
-            state = RegistrationStatePigeon.UNREGISTERED,
-            description = description
-        )
-        is RegistrationState.Unregistering -> RegistrationUpdate(
-            state = RegistrationStatePigeon.UNREGISTERING,
-            description = description
+        is RegistrationState.Available -> RegistrationUpdate(
+            state = RegistrationStatePigeon.AVAILABLE,
+            errorCode = error?.name,
+            description = error?.description
         )
         is RegistrationState.Unavailable -> RegistrationUpdate(
             state = RegistrationStatePigeon.UNAVAILABLE,
-            description = description
+            errorCode = error?.name,
+            description = error?.description
         )
-        is RegistrationState.Error -> RegistrationUpdate(
-            state = RegistrationStatePigeon.ERROR,
-            description = error.description
+        is RegistrationState.Registering -> RegistrationUpdate(
+            state = RegistrationStatePigeon.REGISTERING,
+            errorCode = error?.name,
+            description = error?.description
+        )
+        is RegistrationState.Registered -> RegistrationUpdate(
+            state = RegistrationStatePigeon.REGISTERED,
+            errorCode = error?.name,
+            description = error?.description
+        )
+        is RegistrationState.Unregistering -> RegistrationUpdate(
+            state = RegistrationStatePigeon.UNREGISTERING,
+            errorCode = error?.name,
+            description = error?.description
         )
     }
 
 private fun StreamSessionState.toPigeon(): StreamState =
     when (this) {
-        StreamSessionState.STOPPED -> StreamState.STOPPED
-        StreamSessionState.WAITING_FOR_DEVICE -> StreamState.WAITING_FOR_DEVICE
         StreamSessionState.STARTING -> StreamState.STARTING
+        StreamSessionState.STARTED -> StreamState.STARTED
         StreamSessionState.STREAMING -> StreamState.STREAMING
         StreamSessionState.STOPPING -> StreamState.STOPPING
-        StreamSessionState.PAUSED -> StreamState.PAUSED
+        StreamSessionState.STOPPED -> StreamState.STOPPED
+        StreamSessionState.CLOSED -> StreamState.CLOSED
     }
 
 private fun VideoQualityPigeon.toSdk(): VideoQuality =
@@ -327,8 +328,8 @@ private fun PhotoData.toPigeon(): PhotoDataPigeon =
     when (this) {
         is PhotoData.Bitmap -> {
             val stream = java.io.ByteArrayOutputStream()
-            bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 90, stream)
-            PhotoDataPigeon(data = stream.toByteArray(), format = "png")
+            bitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 90, stream)
+            PhotoDataPigeon(data = stream.toByteArray(), format = "jpeg")
         }
         is PhotoData.HEIC -> {
             val byteArray = ByteArray(data.remaining())

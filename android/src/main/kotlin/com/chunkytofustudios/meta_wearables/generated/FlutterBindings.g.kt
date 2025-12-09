@@ -2,7 +2,7 @@
 // See also: https://pub.dev/packages/pigeon
 @file:Suppress("UNCHECKED_CAST", "ArrayInDataClass")
 
-package com.chunkytofustudios.meta_wearables.meta_wearables
+package com.chunkytofustudios.meta_wearables.generated
 
 import android.util.Log
 import io.flutter.plugin.common.BasicMessageChannel
@@ -13,7 +13,7 @@ import io.flutter.plugin.common.StandardMethodCodec
 import io.flutter.plugin.common.StandardMessageCodec
 import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
-private object PigeonPigeonUtils {
+private object FlutterBindingsPigeonUtils {
 
   fun createConnectionError(channelName: String): FlutterError {
     return FlutterError("channel-error",  "Unable to establish connection on channel: '$channelName'.", "")  }
@@ -81,6 +81,7 @@ class FlutterError (
   val details: Any? = null
 ) : Throwable()
 
+/** Permissions that can be requested. */
 enum class Permission(val raw: Int) {
   CAMERA(0);
 
@@ -94,6 +95,7 @@ enum class Permission(val raw: Int) {
 enum class PermissionStatus(val raw: Int) {
   GRANTED(0),
   DENIED(1),
+  /** Android-only: wraps PermissionStatus.Error */
   ERROR(2);
 
   companion object {
@@ -103,13 +105,13 @@ enum class PermissionStatus(val raw: Int) {
   }
 }
 
+/** Registration states per official docs (Android/iOS). */
 enum class RegistrationState(val raw: Int) {
-  REGISTERED(0),
-  REGISTERING(1),
-  UNREGISTERED(2),
-  UNREGISTERING(3),
-  UNAVAILABLE(4),
-  ERROR(5);
+  UNAVAILABLE(0),
+  AVAILABLE(1),
+  REGISTERING(2),
+  REGISTERED(3),
+  UNREGISTERING(4);
 
   companion object {
     fun ofRaw(raw: Int): RegistrationState? {
@@ -130,13 +132,19 @@ enum class VideoQuality(val raw: Int) {
   }
 }
 
+/**
+ * Combined stream states across Android (STARTING/STARTED/STREAMING/STOPPING/STOPPED/CLOSED)
+ * and iOS (waitingForDevice/starting/streaming/paused/stopping/stopped).
+ */
 enum class StreamState(val raw: Int) {
-  STOPPED(0),
-  WAITING_FOR_DEVICE(1),
-  STARTING(2),
+  WAITING_FOR_DEVICE(0),
+  STARTING(1),
+  STARTED(2),
   STREAMING(3),
   STOPPING(4),
-  PAUSED(5);
+  STOPPED(5),
+  PAUSED(6),
+  CLOSED(7);
 
   companion object {
     fun ofRaw(raw: Int): StreamState? {
@@ -171,7 +179,7 @@ data class PermissionResult (
     if (this === other) {
       return true
     }
-    return PigeonPigeonUtils.deepEquals(toList(), other.toList())  }
+    return FlutterBindingsPigeonUtils.deepEquals(toList(), other.toList())  }
 
   override fun hashCode(): Int = toList().hashCode()
 }
@@ -179,19 +187,22 @@ data class PermissionResult (
 /** Generated class from Pigeon that represents data sent in messages. */
 data class RegistrationUpdate (
   val state: RegistrationState,
+  val errorCode: String? = null,
   val description: String? = null
 )
  {
   companion object {
     fun fromList(pigeonVar_list: List<Any?>): RegistrationUpdate {
       val state = pigeonVar_list[0] as RegistrationState
-      val description = pigeonVar_list[1] as String?
-      return RegistrationUpdate(state, description)
+      val errorCode = pigeonVar_list[1] as String?
+      val description = pigeonVar_list[2] as String?
+      return RegistrationUpdate(state, errorCode, description)
     }
   }
   fun toList(): List<Any?> {
     return listOf(
       state,
+      errorCode,
       description,
     )
   }
@@ -202,7 +213,7 @@ data class RegistrationUpdate (
     if (this === other) {
       return true
     }
-    return PigeonPigeonUtils.deepEquals(toList(), other.toList())  }
+    return FlutterBindingsPigeonUtils.deepEquals(toList(), other.toList())  }
 
   override fun hashCode(): Int = toList().hashCode()
 }
@@ -233,7 +244,7 @@ data class StreamConfig (
     if (this === other) {
       return true
     }
-    return PigeonPigeonUtils.deepEquals(toList(), other.toList())  }
+    return FlutterBindingsPigeonUtils.deepEquals(toList(), other.toList())  }
 
   override fun hashCode(): Int = toList().hashCode()
 }
@@ -267,7 +278,7 @@ data class VideoFrameData (
     if (this === other) {
       return true
     }
-    return PigeonPigeonUtils.deepEquals(toList(), other.toList())  }
+    return FlutterBindingsPigeonUtils.deepEquals(toList(), other.toList())  }
 
   override fun hashCode(): Int = toList().hashCode()
 }
@@ -298,7 +309,7 @@ data class PhotoData (
     if (this === other) {
       return true
     }
-    return PigeonPigeonUtils.deepEquals(toList(), other.toList())  }
+    return FlutterBindingsPigeonUtils.deepEquals(toList(), other.toList())  }
 
   override fun hashCode(): Int = toList().hashCode()
 }
@@ -329,11 +340,11 @@ data class ErrorInfo (
     if (this === other) {
       return true
     }
-    return PigeonPigeonUtils.deepEquals(toList(), other.toList())  }
+    return FlutterBindingsPigeonUtils.deepEquals(toList(), other.toList())  }
 
   override fun hashCode(): Int = toList().hashCode()
 }
-private open class PigeonPigeonCodec : StandardMessageCodec() {
+private open class FlutterBindingsPigeonCodec : StandardMessageCodec() {
   override fun readValueOfType(type: Byte, buffer: ByteBuffer): Any? {
     return when (type) {
       129.toByte() -> {
@@ -461,7 +472,7 @@ interface WearablesHostApi {
   companion object {
     /** The codec used by WearablesHostApi. */
     val codec: MessageCodec<Any?> by lazy {
-      PigeonPigeonCodec()
+      FlutterBindingsPigeonCodec()
     }
     /** Sets up an instance of `WearablesHostApi` to handle messages through the `binaryMessenger`. */
     @JvmOverloads
@@ -475,7 +486,7 @@ interface WearablesHostApi {
               api.initialize()
               listOf(null)
             } catch (exception: Throwable) {
-              PigeonPigeonUtils.wrapError(exception)
+              FlutterBindingsPigeonUtils.wrapError(exception)
             }
             reply.reply(wrapped)
           }
@@ -492,10 +503,10 @@ interface WearablesHostApi {
             api.checkPermission(permissionArg) { result: Result<PermissionResult> ->
               val error = result.exceptionOrNull()
               if (error != null) {
-                reply.reply(PigeonPigeonUtils.wrapError(error))
+                reply.reply(FlutterBindingsPigeonUtils.wrapError(error))
               } else {
                 val data = result.getOrNull()
-                reply.reply(PigeonPigeonUtils.wrapResult(data))
+                reply.reply(FlutterBindingsPigeonUtils.wrapResult(data))
               }
             }
           }
@@ -512,10 +523,10 @@ interface WearablesHostApi {
             api.requestPermission(permissionArg) { result: Result<PermissionResult> ->
               val error = result.exceptionOrNull()
               if (error != null) {
-                reply.reply(PigeonPigeonUtils.wrapError(error))
+                reply.reply(FlutterBindingsPigeonUtils.wrapError(error))
               } else {
                 val data = result.getOrNull()
-                reply.reply(PigeonPigeonUtils.wrapResult(data))
+                reply.reply(FlutterBindingsPigeonUtils.wrapResult(data))
               }
             }
           }
@@ -530,10 +541,10 @@ interface WearablesHostApi {
             api.getRegistrationState{ result: Result<RegistrationUpdate> ->
               val error = result.exceptionOrNull()
               if (error != null) {
-                reply.reply(PigeonPigeonUtils.wrapError(error))
+                reply.reply(FlutterBindingsPigeonUtils.wrapError(error))
               } else {
                 val data = result.getOrNull()
-                reply.reply(PigeonPigeonUtils.wrapResult(data))
+                reply.reply(FlutterBindingsPigeonUtils.wrapResult(data))
               }
             }
           }
@@ -548,9 +559,9 @@ interface WearablesHostApi {
             api.startRegistration{ result: Result<Unit> ->
               val error = result.exceptionOrNull()
               if (error != null) {
-                reply.reply(PigeonPigeonUtils.wrapError(error))
+                reply.reply(FlutterBindingsPigeonUtils.wrapError(error))
               } else {
-                reply.reply(PigeonPigeonUtils.wrapResult(null))
+                reply.reply(FlutterBindingsPigeonUtils.wrapResult(null))
               }
             }
           }
@@ -565,9 +576,9 @@ interface WearablesHostApi {
             api.startUnregistration{ result: Result<Unit> ->
               val error = result.exceptionOrNull()
               if (error != null) {
-                reply.reply(PigeonPigeonUtils.wrapError(error))
+                reply.reply(FlutterBindingsPigeonUtils.wrapError(error))
               } else {
-                reply.reply(PigeonPigeonUtils.wrapResult(null))
+                reply.reply(FlutterBindingsPigeonUtils.wrapResult(null))
               }
             }
           }
@@ -584,9 +595,9 @@ interface WearablesHostApi {
             api.startStream(configArg) { result: Result<Unit> ->
               val error = result.exceptionOrNull()
               if (error != null) {
-                reply.reply(PigeonPigeonUtils.wrapError(error))
+                reply.reply(FlutterBindingsPigeonUtils.wrapError(error))
               } else {
-                reply.reply(PigeonPigeonUtils.wrapResult(null))
+                reply.reply(FlutterBindingsPigeonUtils.wrapResult(null))
               }
             }
           }
@@ -602,7 +613,7 @@ interface WearablesHostApi {
               api.stopStream()
               listOf(null)
             } catch (exception: Throwable) {
-              PigeonPigeonUtils.wrapError(exception)
+              FlutterBindingsPigeonUtils.wrapError(exception)
             }
             reply.reply(wrapped)
           }
@@ -618,7 +629,7 @@ interface WearablesHostApi {
               api.capturePhoto()
               listOf(null)
             } catch (exception: Throwable) {
-              PigeonPigeonUtils.wrapError(exception)
+              FlutterBindingsPigeonUtils.wrapError(exception)
             }
             reply.reply(wrapped)
           }
@@ -634,7 +645,7 @@ class WearablesFlutterApi(private val binaryMessenger: BinaryMessenger, private 
   companion object {
     /** The codec used by WearablesFlutterApi. */
     val codec: MessageCodec<Any?> by lazy {
-      PigeonPigeonCodec()
+      FlutterBindingsPigeonCodec()
     }
   }
   fun onRegistrationStateChanged(updateArg: RegistrationUpdate, callback: (Result<Unit>) -> Unit)
@@ -650,7 +661,7 @@ class WearablesFlutterApi(private val binaryMessenger: BinaryMessenger, private 
           callback(Result.success(Unit))
         }
       } else {
-        callback(Result.failure(PigeonPigeonUtils.createConnectionError(channelName)))
+        callback(Result.failure(FlutterBindingsPigeonUtils.createConnectionError(channelName)))
       } 
     }
   }
@@ -667,7 +678,7 @@ class WearablesFlutterApi(private val binaryMessenger: BinaryMessenger, private 
           callback(Result.success(Unit))
         }
       } else {
-        callback(Result.failure(PigeonPigeonUtils.createConnectionError(channelName)))
+        callback(Result.failure(FlutterBindingsPigeonUtils.createConnectionError(channelName)))
       } 
     }
   }
@@ -684,7 +695,7 @@ class WearablesFlutterApi(private val binaryMessenger: BinaryMessenger, private 
           callback(Result.success(Unit))
         }
       } else {
-        callback(Result.failure(PigeonPigeonUtils.createConnectionError(channelName)))
+        callback(Result.failure(FlutterBindingsPigeonUtils.createConnectionError(channelName)))
       } 
     }
   }
@@ -701,7 +712,7 @@ class WearablesFlutterApi(private val binaryMessenger: BinaryMessenger, private 
           callback(Result.success(Unit))
         }
       } else {
-        callback(Result.failure(PigeonPigeonUtils.createConnectionError(channelName)))
+        callback(Result.failure(FlutterBindingsPigeonUtils.createConnectionError(channelName)))
       } 
     }
   }
@@ -718,7 +729,7 @@ class WearablesFlutterApi(private val binaryMessenger: BinaryMessenger, private 
           callback(Result.success(Unit))
         }
       } else {
-        callback(Result.failure(PigeonPigeonUtils.createConnectionError(channelName)))
+        callback(Result.failure(FlutterBindingsPigeonUtils.createConnectionError(channelName)))
       } 
     }
   }

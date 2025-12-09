@@ -98,7 +98,7 @@ private class MetaWearablesHostApiImpl: NSObject, WearablesHostApi {
     #if canImport(MWDATCore)
     completion(.success(Wearables.shared.registrationState.toPigeonUpdate()))
     #else
-    completion(.success(RegistrationUpdate(state: .unavailable, description: "MWDATCore not linked.")))
+    completion(.success(RegistrationUpdate(state: .unavailable, errorCode: nil, description: "MWDATCore not linked.")))
     #endif
   }
 
@@ -222,8 +222,6 @@ private extension PermissionStatus {
       return PermissionResult(status: .granted, message: nil)
     case .denied:
       return PermissionResult(status: .denied, message: nil)
-    case .error(let err):
-      return PermissionResult(status: .error, message: err.description)
     @unknown default:
       return PermissionResult(status: .error, message: "Unknown permission status")
     }
@@ -233,20 +231,16 @@ private extension PermissionStatus {
 private extension RegistrationState {
   func toPigeonUpdate() -> RegistrationUpdate {
     switch self {
-    case .registered:
-      return RegistrationUpdate(state: .registered, description: nil)
-    case .registering:
-      return RegistrationUpdate(state: .registering, description: nil)
-    case .unregistered:
-      return RegistrationUpdate(state: .unregistered, description: nil)
-    case .unregistering:
-      return RegistrationUpdate(state: .unregistering, description: nil)
     case .unavailable:
-      return RegistrationUpdate(state: .unavailable, description: nil)
-    case .error(let error):
-      return RegistrationUpdate(state: .error, description: error.description)
+      return RegistrationUpdate(state: .unavailable, errorCode: nil, description: nil)
+    case .available:
+      return RegistrationUpdate(state: .available, errorCode: nil, description: nil)
+    case .registering:
+      return RegistrationUpdate(state: .registering, errorCode: nil, description: nil)
+    case .registered:
+      return RegistrationUpdate(state: .registered, errorCode: nil, description: nil)
     @unknown default:
-      return RegistrationUpdate(state: .error, description: "Unknown registration state")
+      return RegistrationUpdate(state: .unavailable, errorCode: nil, description: "Unknown registration state")
     }
   }
 }

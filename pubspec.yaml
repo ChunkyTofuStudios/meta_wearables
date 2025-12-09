@@ -23,7 +23,7 @@ flutter:
   plugin:
     platforms:
       android:
-        package: com.chunkytofustudios.meta_wearables.meta_wearables
+        package: com.chunkytofustudios.meta_wearables
         pluginClass: MetaWearablesPlugin
       ios:
         pluginClass: MetaWearablesPlugin

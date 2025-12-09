@@ -32,8 +32,8 @@ if (perm.status == PermissionStatus.granted) {
 ```
 
 Streams:
-- `registrationUpdates` – registration state changes
-- `streamStates` – session state updates
+- `registrationUpdates` – registration state changes (`unavailable/available/registering/registered/unregistering`; `unregistering` is Android-only; error info in `errorCode/description`)
+- `streamStates` – session state updates (union of Android `starting/started/streaming/stopping/stopped/closed` and iOS `waitingForDevice/starting/streaming/stopping/stopped/paused`)
 - `videoFrames` – raw frame bytes + dimensions
 - `photos` – captured photo bytes + format
 - `errors` – error callbacks from native
@@ -61,6 +61,8 @@ The plugin pulls:
 com.meta.wearable:mwdat-core:0.2.1
 com.meta.wearable:mwdat-camera:0.2.1
 ```
+`PermissionStatus.error` is Android-only; iOS emits `granted/denied` (errors surface via the `errors` stream).
+`StreamState.started/closed` are Android-only; `waitingForDevice/paused` are iOS-only.
 
 ## iOS setup
 

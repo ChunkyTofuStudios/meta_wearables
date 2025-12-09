@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'src/pigeons/wearables.g.dart';
+import 'src/generated/platform_bindings.g.dart';
 
 /// High-level Flutter wrapper around the Meta Wearables Device Access Toolkit.
 class MetaWearables implements WearablesFlutterApi {
@@ -11,7 +11,8 @@ class MetaWearables implements WearablesFlutterApi {
   static final MetaWearables instance = MetaWearables._();
   final WearablesHostApi _host = WearablesHostApi();
 
-  final _registrationController = StreamController<RegistrationUpdate>.broadcast();
+  final _registrationController =
+      StreamController<RegistrationUpdate>.broadcast();
   final _streamStateController = StreamController<StreamState>.broadcast();
   final _videoFrameController = StreamController<VideoFrameData>.broadcast();
   final _photoController = StreamController<PhotoData>.broadcast();
@@ -21,10 +22,12 @@ class MetaWearables implements WearablesFlutterApi {
   Future<void> initialize() => _host.initialize();
 
   /// Returns the current registration state.
-  Future<RegistrationUpdate> getRegistrationState() => _host.getRegistrationState();
+  Future<RegistrationUpdate> getRegistrationState() =>
+      _host.getRegistrationState();
 
   /// Stream of registration state changes.
-  Stream<RegistrationUpdate> get registrationUpdates => _registrationController.stream;
+  Stream<RegistrationUpdate> get registrationUpdates =>
+      _registrationController.stream;
 
   /// Starts the registration flow with the Meta AI app.
   Future<void> startRegistration() => _host.startRegistration();
@@ -41,8 +44,10 @@ class MetaWearables implements WearablesFlutterApi {
       _host.requestPermission(permission);
 
   /// Starts streaming with the given config.
-  Future<void> startStream({VideoQuality quality = VideoQuality.medium, int frameRate = 24}) =>
-      _host.startStream(StreamConfig(quality: quality, frameRate: frameRate));
+  Future<void> startStream({
+    VideoQuality quality = VideoQuality.medium,
+    int frameRate = 30,
+  }) => _host.startStream(StreamConfig(quality: quality, frameRate: frameRate));
 
   /// Stops the current stream session.
   Future<void> stopStream() => _host.stopStream();

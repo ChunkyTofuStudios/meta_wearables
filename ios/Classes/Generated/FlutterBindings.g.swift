@@ -68,7 +68,7 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
   return value as! T?
 }
 
-func deepEqualsPigeon(_ lhs: Any?, _ rhs: Any?) -> Bool {
+func deepEqualsFlutterBindings(_ lhs: Any?, _ rhs: Any?) -> Bool {
   let cleanLhs = nilOrValue(lhs) as Any?
   let cleanRhs = nilOrValue(rhs) as Any?
   switch (cleanLhs, cleanRhs) {
@@ -87,7 +87,7 @@ func deepEqualsPigeon(_ lhs: Any?, _ rhs: Any?) -> Bool {
   case let (cleanLhsArray, cleanRhsArray) as ([Any?], [Any?]):
     guard cleanLhsArray.count == cleanRhsArray.count else { return false }
     for (index, element) in cleanLhsArray.enumerated() {
-      if !deepEqualsPigeon(element, cleanRhsArray[index]) {
+      if !deepEqualsFlutterBindings(element, cleanRhsArray[index]) {
         return false
       }
     }
@@ -97,7 +97,7 @@ func deepEqualsPigeon(_ lhs: Any?, _ rhs: Any?) -> Bool {
     guard cleanLhsDictionary.count == cleanRhsDictionary.count else { return false }
     for (key, cleanLhsValue) in cleanLhsDictionary {
       guard cleanRhsDictionary.index(forKey: key) != nil else { return false }
-      if !deepEqualsPigeon(cleanLhsValue, cleanRhsDictionary[key]!) {
+      if !deepEqualsFlutterBindings(cleanLhsValue, cleanRhsDictionary[key]!) {
         return false
       }
     }
@@ -109,16 +109,16 @@ func deepEqualsPigeon(_ lhs: Any?, _ rhs: Any?) -> Bool {
   }
 }
 
-func deepHashPigeon(value: Any?, hasher: inout Hasher) {
+func deepHashFlutterBindings(value: Any?, hasher: inout Hasher) {
   if let valueList = value as? [AnyHashable] {
-     for item in valueList { deepHashPigeon(value: item, hasher: &hasher) }
+     for item in valueList { deepHashFlutterBindings(value: item, hasher: &hasher) }
      return
   }
 
   if let valueDict = value as? [AnyHashable: AnyHashable] {
     for key in valueDict.keys { 
       hasher.combine(key)
-      deepHashPigeon(value: valueDict[key]!, hasher: &hasher)
+      deepHashFlutterBindings(value: valueDict[key]!, hasher: &hasher)
     }
     return
   }
@@ -132,6 +132,7 @@ func deepHashPigeon(value: Any?, hasher: inout Hasher) {
 
     
 
+/// Permissions that can be requested.
 enum Permission: Int {
   case camera = 0
 }
@@ -139,16 +140,17 @@ enum Permission: Int {
 enum PermissionStatus: Int {
   case granted = 0
   case denied = 1
+  /// Android-only: wraps PermissionStatus.Error
   case error = 2
 }
 
+/// Registration states per official docs (Android/iOS).
 enum RegistrationState: Int {
-  case registered = 0
-  case registering = 1
-  case unregistered = 2
-  case unregistering = 3
-  case unavailable = 4
-  case error = 5
+  case unavailable = 0
+  case available = 1
+  case registering = 2
+  case registered = 3
+  case unregistering = 4
 }
 
 enum VideoQuality: Int {
@@ -157,13 +159,17 @@ enum VideoQuality: Int {
   case high = 2
 }
 
+/// Combined stream states across Android (STARTING/STARTED/STREAMING/STOPPING/STOPPED/CLOSED)
+/// and iOS (waitingForDevice/starting/streaming/paused/stopping/stopped).
 enum StreamState: Int {
-  case stopped = 0
-  case waitingForDevice = 1
-  case starting = 2
+  case waitingForDevice = 0
+  case starting = 1
+  case started = 2
   case streaming = 3
   case stopping = 4
-  case paused = 5
+  case stopped = 5
+  case paused = 6
+  case closed = 7
 }
 
 /// Generated class from Pigeon that represents data sent in messages.
@@ -189,38 +195,42 @@ struct PermissionResult: Hashable {
     ]
   }
   static func == (lhs: PermissionResult, rhs: PermissionResult) -> Bool {
-    return deepEqualsPigeon(lhs.toList(), rhs.toList())  }
+    return deepEqualsFlutterBindings(lhs.toList(), rhs.toList())  }
   func hash(into hasher: inout Hasher) {
-    deepHashPigeon(value: toList(), hasher: &hasher)
+    deepHashFlutterBindings(value: toList(), hasher: &hasher)
   }
 }
 
 /// Generated class from Pigeon that represents data sent in messages.
 struct RegistrationUpdate: Hashable {
   var state: RegistrationState
+  var errorCode: String? = nil
   var description: String? = nil
 
 
   // swift-format-ignore: AlwaysUseLowerCamelCase
   static func fromList(_ pigeonVar_list: [Any?]) -> RegistrationUpdate? {
     let state = pigeonVar_list[0] as! RegistrationState
-    let description: String? = nilOrValue(pigeonVar_list[1])
+    let errorCode: String? = nilOrValue(pigeonVar_list[1])
+    let description: String? = nilOrValue(pigeonVar_list[2])
 
     return RegistrationUpdate(
       state: state,
+      errorCode: errorCode,
       description: description
     )
   }
   func toList() -> [Any?] {
     return [
       state,
+      errorCode,
       description,
     ]
   }
   static func == (lhs: RegistrationUpdate, rhs: RegistrationUpdate) -> Bool {
-    return deepEqualsPigeon(lhs.toList(), rhs.toList())  }
+    return deepEqualsFlutterBindings(lhs.toList(), rhs.toList())  }
   func hash(into hasher: inout Hasher) {
-    deepHashPigeon(value: toList(), hasher: &hasher)
+    deepHashFlutterBindings(value: toList(), hasher: &hasher)
   }
 }
 
@@ -247,9 +257,9 @@ struct StreamConfig: Hashable {
     ]
   }
   static func == (lhs: StreamConfig, rhs: StreamConfig) -> Bool {
-    return deepEqualsPigeon(lhs.toList(), rhs.toList())  }
+    return deepEqualsFlutterBindings(lhs.toList(), rhs.toList())  }
   func hash(into hasher: inout Hasher) {
-    deepHashPigeon(value: toList(), hasher: &hasher)
+    deepHashFlutterBindings(value: toList(), hasher: &hasher)
   }
 }
 
@@ -280,9 +290,9 @@ struct VideoFrameData: Hashable {
     ]
   }
   static func == (lhs: VideoFrameData, rhs: VideoFrameData) -> Bool {
-    return deepEqualsPigeon(lhs.toList(), rhs.toList())  }
+    return deepEqualsFlutterBindings(lhs.toList(), rhs.toList())  }
   func hash(into hasher: inout Hasher) {
-    deepHashPigeon(value: toList(), hasher: &hasher)
+    deepHashFlutterBindings(value: toList(), hasher: &hasher)
   }
 }
 
@@ -309,9 +319,9 @@ struct PhotoData: Hashable {
     ]
   }
   static func == (lhs: PhotoData, rhs: PhotoData) -> Bool {
-    return deepEqualsPigeon(lhs.toList(), rhs.toList())  }
+    return deepEqualsFlutterBindings(lhs.toList(), rhs.toList())  }
   func hash(into hasher: inout Hasher) {
-    deepHashPigeon(value: toList(), hasher: &hasher)
+    deepHashFlutterBindings(value: toList(), hasher: &hasher)
   }
 }
 
@@ -338,13 +348,13 @@ struct ErrorInfo: Hashable {
     ]
   }
   static func == (lhs: ErrorInfo, rhs: ErrorInfo) -> Bool {
-    return deepEqualsPigeon(lhs.toList(), rhs.toList())  }
+    return deepEqualsFlutterBindings(lhs.toList(), rhs.toList())  }
   func hash(into hasher: inout Hasher) {
-    deepHashPigeon(value: toList(), hasher: &hasher)
+    deepHashFlutterBindings(value: toList(), hasher: &hasher)
   }
 }
 
-private class PigeonPigeonCodecReader: FlutterStandardReader {
+private class FlutterBindingsPigeonCodecReader: FlutterStandardReader {
   override func readValue(ofType type: UInt8) -> Any? {
     switch type {
     case 129:
@@ -395,7 +405,7 @@ private class PigeonPigeonCodecReader: FlutterStandardReader {
   }
 }
 
-private class PigeonPigeonCodecWriter: FlutterStandardWriter {
+private class FlutterBindingsPigeonCodecWriter: FlutterStandardWriter {
   override func writeValue(_ value: Any) {
     if let value = value as? Permission {
       super.writeByte(129)
@@ -436,18 +446,18 @@ private class PigeonPigeonCodecWriter: FlutterStandardWriter {
   }
 }
 
-private class PigeonPigeonCodecReaderWriter: FlutterStandardReaderWriter {
+private class FlutterBindingsPigeonCodecReaderWriter: FlutterStandardReaderWriter {
   override func reader(with data: Data) -> FlutterStandardReader {
-    return PigeonPigeonCodecReader(data: data)
+    return FlutterBindingsPigeonCodecReader(data: data)
   }
 
   override func writer(with data: NSMutableData) -> FlutterStandardWriter {
-    return PigeonPigeonCodecWriter(data: data)
+    return FlutterBindingsPigeonCodecWriter(data: data)
   }
 }
 
-class PigeonPigeonCodec: FlutterStandardMessageCodec, @unchecked Sendable {
-  static let shared = PigeonPigeonCodec(readerWriter: PigeonPigeonCodecReaderWriter())
+class FlutterBindingsPigeonCodec: FlutterStandardMessageCodec, @unchecked Sendable {
+  static let shared = FlutterBindingsPigeonCodec(readerWriter: FlutterBindingsPigeonCodecReaderWriter())
 }
 
 
@@ -466,7 +476,7 @@ protocol WearablesHostApi {
 
 /// Generated setup class from Pigeon to handle messages through the `binaryMessenger`.
 class WearablesHostApiSetup {
-  static var codec: FlutterStandardMessageCodec { PigeonPigeonCodec.shared }
+  static var codec: FlutterStandardMessageCodec { FlutterBindingsPigeonCodec.shared }
   /// Sets up an instance of `WearablesHostApi` to handle messages through the `binaryMessenger`.
   static func setUp(binaryMessenger: FlutterBinaryMessenger, api: WearablesHostApi?, messageChannelSuffix: String = "") {
     let channelSuffix = messageChannelSuffix.count > 0 ? ".\(messageChannelSuffix)" : ""
@@ -622,8 +632,8 @@ class WearablesFlutterApi: WearablesFlutterApiProtocol {
     self.binaryMessenger = binaryMessenger
     self.messageChannelSuffix = messageChannelSuffix.count > 0 ? ".\(messageChannelSuffix)" : ""
   }
-  var codec: PigeonPigeonCodec {
-    return PigeonPigeonCodec.shared
+  var codec: FlutterBindingsPigeonCodec {
+    return FlutterBindingsPigeonCodec.shared
   }
   func onRegistrationStateChanged(update updateArg: RegistrationUpdate, completion: @escaping (Result<Void, PigeonError>) -> Void) {
     let channelName: String = "dev.flutter.pigeon.meta_wearables.WearablesFlutterApi.onRegistrationStateChanged\(messageChannelSuffix)"

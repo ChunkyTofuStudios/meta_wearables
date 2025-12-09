@@ -1,8 +1,30 @@
 import 'package:pigeon/pigeon.dart';
 
+// After modifying this file run:
+// dart run pigeon --input pigeons/meta_wearables_api.dart && dart format .
+
+@ConfigurePigeon(
+  PigeonOptions(
+    dartPackageName: 'meta_wearables',
+    dartOut: 'lib/src/generated/platform_bindings.g.dart',
+    swiftOut: 'ios/Classes/Generated/FlutterBindings.g.swift',
+    kotlinOut:
+        'android/src/main/kotlin/com/chunkytofustudios/meta_wearables/generated/FlutterBindings.g.kt',
+    kotlinOptions: KotlinOptions(
+      package: 'com.chunkytofustudios.meta_wearables.generated',
+    ),
+  ),
+)
+/// Permissions that can be requested.
 enum Permission { camera }
 
-enum PermissionStatus { granted, denied, error }
+enum PermissionStatus {
+  granted,
+  denied,
+
+  /// Android-only: wraps PermissionStatus.Error
+  error,
+}
 
 class PermissionResult {
   PermissionStatus status;
@@ -11,20 +33,21 @@ class PermissionResult {
   PermissionResult({required this.status, this.message});
 }
 
+/// Registration states per official docs (Android/iOS).
 enum RegistrationState {
-  registered,
-  registering,
-  unregistered,
-  unregistering,
   unavailable,
-  error,
+  available,
+  registering,
+  registered,
+  unregistering,
 }
 
 class RegistrationUpdate {
   RegistrationState state;
+  String? errorCode;
   String? description;
 
-  RegistrationUpdate({required this.state, this.description});
+  RegistrationUpdate({required this.state, this.errorCode, this.description});
 }
 
 enum VideoQuality { low, medium, high }
@@ -36,13 +59,17 @@ class StreamConfig {
   StreamConfig({required this.quality, required this.frameRate});
 }
 
+/// Combined stream states across Android (STARTING/STARTED/STREAMING/STOPPING/STOPPED/CLOSED)
+/// and iOS (waitingForDevice/starting/streaming/paused/stopping/stopped).
 enum StreamState {
-  stopped,
   waitingForDevice,
   starting,
+  started,
   streaming,
   stopping,
+  stopped,
   paused,
+  closed,
 }
 
 class VideoFrameData {
@@ -71,20 +98,6 @@ class ErrorInfo {
   ErrorInfo({required this.code, required this.message});
 }
 
-@ConfigurePigeon(
-  PigeonOptions(
-    dartPackageName: 'meta_wearables',
-    dartOut: 'lib/src/pigeons/wearables.g.dart',
-    dartOptions: DartOptions(),
-    kotlinOut:
-        'android/src/main/kotlin/com/chunkytofustudios/meta_wearables/meta_wearables/Pigeon.kt',
-    kotlinOptions: KotlinOptions(
-      package: 'com.chunkytofustudios.meta_wearables.meta_wearables',
-    ),
-    swiftOut: 'ios/Classes/Pigeon.swift',
-    swiftOptions: SwiftOptions(),
-  ),
-)
 @HostApi()
 abstract class WearablesHostApi {
   void initialize();
