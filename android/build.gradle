@@ -6,6 +6,16 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        maven {
+            url = uri("https://maven.pkg.github.com/facebook/meta-wearables-dat-android")
+            credentials {
+                username = (project.findProperty("GITHUB_ACTOR") ?: System.getenv("GITHUB_ACTOR") ?: "")
+                password = (project.findProperty("GITHUB_TOKEN")
+                        ?: System.getenv("GITHUB_TOKEN")
+                        ?: System.getenv("META_WEARABLES_GH_TOKEN")
+                        ?: "")
+            }
+        }
     }
 
     dependencies {
@@ -18,6 +28,16 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        maven {
+            url = uri("https://maven.pkg.github.com/facebook/meta-wearables-dat-android")
+            credentials {
+                username = (project.findProperty("GITHUB_ACTOR") ?: System.getenv("GITHUB_ACTOR") ?: "")
+                password = (project.findProperty("GITHUB_TOKEN")
+                        ?: System.getenv("GITHUB_TOKEN")
+                        ?: System.getenv("META_WEARABLES_GH_TOKEN")
+                        ?: "")
+            }
+        }
     }
 }
 
@@ -48,6 +68,10 @@ android {
     }
 
     dependencies {
+        implementation("com.meta.wearable:mwdat-core:0.2.1")
+        implementation("com.meta.wearable:mwdat-camera:0.2.1")
+        implementation("androidx.activity:activity-ktx:1.9.3")
+        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
         testImplementation("org.jetbrains.kotlin:kotlin-test")
         testImplementation("org.mockito:mockito-core:5.0.0")
     }
