@@ -1,6 +1,5 @@
+import 'package:meta_wearables/meta_wearables_method_channel.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-
-import 'meta_wearables_method_channel.dart';
 
 abstract class MetaWearablesPlatform extends PlatformInterface {
   /// Constructs a MetaWearablesPlatform.

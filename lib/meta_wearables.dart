@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'src/generated/platform_bindings.g.dart';
+import 'package:meta_wearables/src/generated/platform_bindings.g.dart';
 
 /// High-level Flutter wrapper around the Meta Wearables Device Access Toolkit.
 class MetaWearables implements WearablesFlutterApi {

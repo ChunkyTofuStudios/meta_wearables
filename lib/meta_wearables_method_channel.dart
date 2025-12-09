@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
-import 'meta_wearables_platform_interface.dart';
+import 'package:meta_wearables/meta_wearables_platform_interface.dart';
 
 /// An implementation of [MetaWearablesPlatform] that uses method channels.
 class MethodChannelMetaWearables extends MetaWearablesPlatform {
